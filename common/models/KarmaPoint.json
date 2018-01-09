@@ -2,6 +2,7 @@
   "name": "KarmaPoint",
   "plural": "KarmaPoint",
   "base": "PersistedModel",
+  "idInjection": true,
   "options": {},
   "properties": {
     "user_id_send": {

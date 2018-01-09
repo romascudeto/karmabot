@@ -20,3 +20,6 @@ module.exports.getUserIdReceive = function getUserIdReceive(stringText) {
 module.exports.checkMentionPeople = function checkMentionPeople(stringText) {
     return stringText.indexOf("@");
 }
+module.exports.checkMentionKarmabot = function checkMentionPeople(stringText) {
+    return stringText.indexOf("@U8NR69LM7");
+}

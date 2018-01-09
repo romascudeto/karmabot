@@ -12,15 +12,25 @@ var bot = new SlackBot({
 });
 
 bot.on('message', function(data) {
-    if(data.type.toLowerCase() == GCONST.DATA_TYPE && data.text.toLowerCase().indexOf(GCONST.DATA_KEYWORD) >= 0
+    if (data.type.toLowerCase() == GCONST.DATA_TYPE
+        && data.text.toLowerCase().indexOf(GCONST.DATA_LEADERBOARD) >= 0
+        && GHELPER.checkMentionKarmabot(data.text) > 0){
+        GHELPERMODEL.getUserKarmaLeaderboard().then(function(res){
+            bot.postMessage(data.channel, 
+                " " + res + " "
+            );
+        });
+    }
+    if(data.type.toLowerCase() == GCONST.DATA_TYPE 
+        && data.text.toLowerCase().indexOf(GCONST.DATA_KEYWORD) >= 0
         && GHELPER.checkMentionPeople(data.text) > 0){
 
         var slackIdReceiveArr = GHELPER.getUserIdReceive(data.text);
         var slackIdSend = data.user;
         GHELPERMODEL.getUserKarmaSendRemainingBySlackId(slackIdSend).then(function(karmaPointRemaining){
-            if (karmaPointRemaining < 5){
+            if (slackIdReceiveArr.length > karmaPointRemaining){
                 bot.postMessage(data.channel, 
-                    "Your karma point " + karmaPointRemaining + " remaining."
+                    "You have " + karmaPointRemaining + " karma point remaining."
                 );
             }else{
                 slackIdReceiveArr.map(function(slackIdReceive){
@@ -35,9 +45,12 @@ bot.on('message', function(data) {
                         KarmaPoint.create(karmaPointTemp).then(function(resKarmaPoint) {
                             UserAccount.findOne({where: {"id": userIdSend}}).then(function(resUserSendInfo){
                                 UserAccount.findOne({where: {"id": userIdReceive}}).then(function(resUserReceiveInfo){
-                                    bot.postMessage(data.channel, 
-                                        resUserReceiveInfo.account_realname + " receives 1 point from " + resUserSendInfo.account_realname + "."
-                                    );
+                                    GHELPERMODEL.getUserKarmaReceive(userIdReceive).then(function(resKarmaPointTotal){
+                                        bot.postMessage(data.channel, 
+                                            resUserReceiveInfo.account_realname + " receives 1 point from " + resUserSendInfo.account_realname 
+                                            + ". " + resUserReceiveInfo.account_realname + " now has " + resKarmaPointTotal + " points."
+                                        );    
+                                    })
                                 });
                             });
                         });

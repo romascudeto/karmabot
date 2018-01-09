@@ -8,9 +8,9 @@
     "port": 3306,
     "url": "",
     "database": "testbot",
-    "password": "rootK1ngston",
+    "password": "",
     "name": "mysqlDs",
-    "user": "user",
+    "user": "root",
     "connector": "mysql",
     "supportBigNumbers": true
   }

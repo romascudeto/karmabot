@@ -2,6 +2,7 @@
   "name": "UserAccount",
   "plural": "UserAccount",
   "base": "PersistedModel",
+  "idInjection": true,
   "options": {},
   "properties": {
     "account_id": {
