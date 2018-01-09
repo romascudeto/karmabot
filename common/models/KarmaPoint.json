@@ -1,0 +1,38 @@
+{
+  "name": "KarmaPoint",
+  "plural": "KarmaPoint",
+  "base": "PersistedModel",
+  "options": {},
+  "properties": {
+    "user_id_send": {
+      "type": "number",
+      "required": false,
+      "length": 20
+    },
+    "user_id_receive": {
+      "type": "number",
+      "required": false,
+      "length": 20
+    },
+    "karma_date": {
+      "type": "Date",
+      "required": false,
+      "dataType": "date"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "userAccountSend": {
+      "type": "belongsTo",
+      "model": "UserAccount",
+      "foreignKey": "user_id_send"
+    },
+    "userAccountReceive": {
+      "type": "belongsTo",
+      "model": "UserAccount",
+      "foreignKey": "user_id_receive"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

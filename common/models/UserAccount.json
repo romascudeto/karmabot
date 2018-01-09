@@ -1,0 +1,38 @@
+{
+  "name": "UserAccount",
+  "plural": "UserAccount",
+  "base": "PersistedModel",
+  "options": {},
+  "properties": {
+    "account_id": {
+      "type": "string",
+      "required": false,
+      "length": 20
+    },
+    "account_name": {
+      "type": "string",
+      "required": false,
+      "length": 100
+    },
+    "account_realname": {
+      "type": "string",
+      "required": false,
+      "length": 100
+    }
+  },
+  "validations": [],
+  "relations": {
+    "karmaPointSend": {
+      "type": "hasMany",
+      "model": "KarmaPoint",
+      "foreignKey": "user_id_send"
+    },
+    "karmaPointReceive": {
+      "type": "hasMany",
+      "model": "KarmaPoint",
+      "foreignKey": "user_id_receive"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}
