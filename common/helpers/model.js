@@ -1,5 +1,6 @@
 var app = require("../../server/server");
 exports.getUserIdBySlackId = getUserIdBySlackId;
+exports.getUserKarmaSendRemainingBySlackId = getUserKarmaSendRemainingBySlackId;
 exports.getUserIdSendAndReceive = getUserIdSendAndReceive;
 
 function getUserIdBySlackId (slackId) {
@@ -7,6 +8,18 @@ function getUserIdBySlackId (slackId) {
     return new Promise(function(resolve, reject) {
         UserAccount.findOne({where: {"account_id": slackId}}).then(userFind => {
             resolve(userFind.id);
+        });
+    })
+}
+
+function getUserKarmaSendRemainingBySlackId (slackId) {
+    var KarmaPoint = app.models.KarmaPoint;
+    return new Promise(function(resolve, reject) {
+        getUserIdBySlackId(slackId).then(function(result){
+            KarmaPoint.find({where: {"user_id_send": result}}).then(function(resultKarmaPoint){
+                var remaining = 5 - resultKarmaPoint.length;
+                resolve(remaining);
+            });
         });
     })
 }

@@ -11,7 +11,12 @@ module.exports.formatDate = function formatDate(date) {
 }
 
 module.exports.getUserIdReceive = function getUserIdReceive(stringText) {
-    var matches = stringText.match(/\<\@(.*?)\>/);
-    var userIdReceive = matches[1];
-    return userIdReceive;
+    var matches = stringText.match(/\<\@(.*?)\>/g).map(function(str){
+        return str.slice(2,-1);
+    });
+    return matches;
+}
+
+module.exports.checkMentionPeople = function checkMentionPeople(stringText) {
+    return stringText.indexOf("@");
 }
