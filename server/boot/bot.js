@@ -28,8 +28,8 @@ bot.on('message', function(data) {
             }
         }else{
             if (data.type.toLowerCase() == GCONST.DATA_TYPE
-                && data.text.toLowerCase().indexOf(GCONST.DATA_KARMA_POINT) >= 0){
-
+                && data.text.toLowerCase() == GCONST.DATA_KARMA_POINT){
+                    BOTHELPER.messageKarmaPoint(data);
             }
         }
     })

@@ -1,6 +1,7 @@
 var app = require("../../server/server");
 var UserAccount = app.models.UserAccount;
 var GCONST = require('../constant/global');
+var _ = require('lodash');
 
 module.exports.formatDate = function formatDate(date) {
     var d = new Date(date),
@@ -14,11 +15,12 @@ module.exports.formatDate = function formatDate(date) {
     return [year, month, day].join('-');
 }
 
-module.exports.getUserIdReceive = function getUserIdReceive(stringText) {
+module.exports.getUserIdReceive = function getUserIdReceive(slackIdSend, stringText) {
     var matches = stringText.match(/\<\@(.*?)\>/g).map(function(str){
         return str.slice(2,-1);
     });
-    return matches;
+    var matchesFilter = _.without(matches, slackIdSend);
+    return _.uniq(matchesFilter);
 }
 
 module.exports.checkMentionPeople = function checkMentionPeople(stringText) {
