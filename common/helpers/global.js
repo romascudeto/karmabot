@@ -1,3 +1,7 @@
+var app = require("../../server/server");
+var UserAccount = app.models.UserAccount;
+var GCONST = require('../constant/global');
+
 module.exports.formatDate = function formatDate(date) {
     var d = new Date(date),
         month = '' + (d.getMonth() + 1),
@@ -19,7 +23,4 @@ module.exports.getUserIdReceive = function getUserIdReceive(stringText) {
 
 module.exports.checkMentionPeople = function checkMentionPeople(stringText) {
     return stringText.indexOf("@");
-}
-module.exports.checkMentionKarmabot = function checkMentionPeople(stringText) {
-    return stringText.indexOf("@U8NR69LM7");
 }

@@ -3,6 +3,7 @@ var SlackBot = require('slackbots');
 var GCONST = require('../../common/constant/global');
 var GHELPER = require('../../common/helpers/global');
 var GHELPERMODEL = require('../../common/helpers/model');
+var BOTHELPER = require('../../common/helpers/bot');
 var UserAccount = app.models.UserAccount;
 var KarmaPoint = app.models.KarmaPoint;
 
@@ -12,69 +13,29 @@ var bot = new SlackBot({
 });
 
 bot.on('message', function(data) {
-    if (data.type.toLowerCase() == GCONST.DATA_TYPE
-        && data.text.toLowerCase().indexOf(GCONST.DATA_LEADERBOARD) >= 0
-        && GHELPER.checkMentionKarmabot(data.text) > 0){
-        GHELPERMODEL.getUserKarmaLeaderboard().then(function(res){
-            bot.postMessage(data.channel, 
-                " " + res + " "
-            );
-        });
-    }
-    if(data.type.toLowerCase() == GCONST.DATA_TYPE 
-        && data.text.toLowerCase().indexOf(GCONST.DATA_KEYWORD) >= 0
-        && GHELPER.checkMentionPeople(data.text) > 0){
-
-        var slackIdReceiveArr = GHELPER.getUserIdReceive(data.text);
-        var slackIdSend = data.user;
-        GHELPERMODEL.getUserKarmaSendRemainingBySlackId(slackIdSend).then(function(karmaPointRemaining){
-            if (slackIdReceiveArr.length > karmaPointRemaining){
-                bot.postMessage(data.channel, 
-                    "You have " + karmaPointRemaining + " karma point remaining."
-                );
-            }else{
-                slackIdReceiveArr.map(function(slackIdReceive){
-                    GHELPERMODEL.getUserIdSendAndReceive(slackIdSend, slackIdReceive).then(function(result){
-                        let [userIdSend, userIdReceive] = result;
-                        var karmaPointTemp = {
-                            user_id_send: userIdSend, 
-                            user_id_receive: userIdReceive, 
-                            karma_date: GHELPER.formatDate(new Date())
-                        };
-
-                        KarmaPoint.create(karmaPointTemp).then(function(resKarmaPoint) {
-                            UserAccount.findOne({where: {"id": userIdSend}}).then(function(resUserSendInfo){
-                                UserAccount.findOne({where: {"id": userIdReceive}}).then(function(resUserReceiveInfo){
-                                    GHELPERMODEL.getUserKarmaReceive(userIdReceive).then(function(resKarmaPointTotal){
-                                        bot.postMessage(data.channel, 
-                                            resUserReceiveInfo.account_realname + " receives 1 point from " + resUserSendInfo.account_realname 
-                                            + ". " + resUserReceiveInfo.account_realname + " now has " + resKarmaPointTotal + " points."
-                                        );    
-                                    })
-                                });
-                            });
-                        });
-
-                    });
-                });
+    BOTHELPER.isChannelMessage(data).then(function(resIsChannel){
+        if (resIsChannel > 0){
+            if (data.type.toLowerCase() == GCONST.DATA_TYPE
+                && data.text.toLowerCase().indexOf(GCONST.DATA_LEADERBOARD) >= 0){
+                    BOTHELPER.messageLeaderboard(data);
             }
-        });
-    }
+            else if(data.type.toLowerCase() == GCONST.DATA_TYPE 
+                && data.text.toLowerCase().indexOf(GCONST.DATA_KEYWORD) >= 0
+                && GHELPER.checkMentionPeople(data.text) > 0){
+                    BOTHELPER.syncUser().then(function(res){
+                        BOTHELPER.messageThanks(data);
+                    });
+            }
+        }else{
+            if (data.type.toLowerCase() == GCONST.DATA_TYPE
+                && data.text.toLowerCase().indexOf(GCONST.DATA_KARMA_POINT) >= 0){
+
+            }
+        }
+    })
+
 });
 
 bot.on('start', function() {
-    bot.getUsers().then(function(users){
-        users.members.map(function(user){
-            UserAccount.findOne({where: {"account_id": user.id}}, function(err, res) {
-                if (res == null){
-                    var userAccountTemp = {
-                        account_id : user.id, 
-                        account_name: user.name, 
-                        account_realname: user.real_name
-                    };
-                    UserAccount.create(userAccountTemp);                
-                }
-            });
-        });
-    })
+    BOTHELPER.syncUser();
 });
