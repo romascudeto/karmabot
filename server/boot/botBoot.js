@@ -12,27 +12,25 @@ var bot = new SlackBot({
 });
 
 bot.on('message', function(data) {
-    botService.isChannelMessage(data).then(function(resIsChannel){
-        if (resIsChannel > 0){
-            if (data.type.toLowerCase() == globalConstant.DATA_TYPE
-                && data.text.toLowerCase().indexOf(globalConstant.DATA_LEADERBOARD) >= 0){
-                    botService.messageLeaderboard(data);
+    if (data.type.toLowerCase() == globalConstant.DATA_TYPE){
+        botService.isChannelMessage(data).then(function(resIsChannel){
+            if (resIsChannel > 0){
+                if (data.text.toLowerCase().indexOf(globalConstant.DATA_LEADERBOARD) >= 0){
+                        botService.messageLeaderboard(data);
+                }
+                else if(data.text.toLowerCase().indexOf(globalConstant.DATA_KEYWORD) >= 0
+                    && globalHelper.checkMentionPeople(data.text) > 0){
+                        botService.syncUser().then(function(res){
+                            botService.messageThanks(data);
+                        });
+                }
+            }else{
+                if (data.text.toLowerCase() == globalConstant.DATA_KARMA_POINT){
+                        botService.messageKarmaPoint(data);
+                }
             }
-            else if(data.type.toLowerCase() == globalConstant.DATA_TYPE 
-                && data.text.toLowerCase().indexOf(globalConstant.DATA_KEYWORD) >= 0
-                && globalHelper.checkMentionPeople(data.text) > 0){
-                    botService.syncUser().then(function(res){
-                        botService.messageThanks(data);
-                    });
-            }
-        }else{
-            if (data.type.toLowerCase() == globalConstant.DATA_TYPE
-                && data.text.toLowerCase() == globalConstant.DATA_KARMA_POINT){
-                    botService.messageKarmaPoint(data);
-            }
-        }
-    })
-
+        })
+    }
 });
 
 bot.on('start', function() {

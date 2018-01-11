@@ -149,9 +149,10 @@ function messageKarmaPoint(data) {
 
 function isChannelMessage(data) {
     return new Promise(function(resolve, reject) {
-        bot.getChannels().then(function(resChannels){
-            var countChannelFound = _.filter(resChannels.channels, { 'id': data.channel});
-            resolve(countChannelFound.length)
-        })
+        var isChannel = 0;
+        if (data.channel.substring(0,1)=="C"){
+            isChannel = 1;
+        }
+        resolve(isChannel);
     })
 }
