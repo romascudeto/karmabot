@@ -1,15 +1,16 @@
 var app = require("../../server/server");
 var SlackBot = require('slackbots');
-var GCONST = require('../constant/global');
-var GHELPER = require('./global');
-var GHELPERMODEL = require('./model');
+var globalConstant = require('../constant/globalConstant');
+var globalHelper = require('../helpers/globalHelper');
+var karmaPointService = require('./karmaPointService');
+var userAccountService = require('./userAccountService');
 var UserAccount = app.models.UserAccount;
 var KarmaPoint = app.models.KarmaPoint;
 var _ = require('lodash');
 
 var bot = new SlackBot({
-   token: GCONST.BOT_TOKEN, 
-   name: GCONST.BOT_NAME
+   token: globalConstant.BOT_TOKEN, 
+   name: globalConstant.BOT_NAME
 });
 
 exports.syncUser = syncUser;
@@ -42,9 +43,9 @@ function syncUser () {
 
 function messageLeaderboard (data) {
     return new Promise(function(resolve, reject) {
-        GHELPERMODEL.isKarmabot(data.text).then(function(resKarmabot){
+        userAccountService.isKarmabot(data.text).then(function(resKarmabot){
             if (resKarmabot){
-                GHELPERMODEL.getUserKarmaLeaderboard().then(function(res){
+                karmaPointService.getUserKarmaLeaderboard().then(function(res){
                     var strLeaderboard = "Rank | Account Name | Karma Point(s) \n";
                     var sortNo = 1;
                     res.map(function(resStr){
@@ -66,8 +67,8 @@ function messageLeaderboard (data) {
 function messageThanks (data) {
     return new Promise(function(resolve, reject) {
         var slackIdSend = data.user;
-        var slackIdReceiveArr = GHELPER.getUserIdReceive(slackIdSend, data.text);
-        GHELPERMODEL.getUserKarmaSendRemainingBySlackId(slackIdSend).then(function(karmaPointRemaining){
+        var slackIdReceiveArr = globalHelper.getUserIdReceive(slackIdSend, data.text);
+        karmaPointService.getUserKarmaSendRemainingBySlackId(slackIdSend).then(function(karmaPointRemaining){
             if (slackIdReceiveArr.length > karmaPointRemaining){
                 UserAccount.findOne({where: {"account_id": slackIdSend}}).then(function(resUserSendInfo){
                     bot.postMessage(data.channel, 
@@ -76,18 +77,18 @@ function messageThanks (data) {
                 })
             }else{
                 slackIdReceiveArr.map(function(slackIdReceive){
-                    GHELPERMODEL.getUserIdSendAndReceive(slackIdSend, slackIdReceive).then(function(result){
+                    userAccountService.getUserIdSendAndReceive(slackIdSend, slackIdReceive).then(function(result){
                         let [userIdSend, userIdReceive] = result;
                         var karmaPointTemp = {
                             user_id_send: userIdSend, 
                             user_id_receive: userIdReceive, 
-                            karma_date: GHELPER.formatDate(new Date())
+                            karma_date: globalHelper.formatDate(new Date())
                         };
 
                         KarmaPoint.create(karmaPointTemp).then(function(resKarmaPoint) {
                             UserAccount.findOne({where: {"id": userIdSend}}).then(function(resUserSendInfo){
                                 UserAccount.findOne({where: {"id": userIdReceive}}).then(function(resUserReceiveInfo){
-                                    GHELPERMODEL.getUserKarmaReceive(userIdReceive).then(function(resKarmaPointTotal){
+                                    karmaPointService.getUserKarmaReceive(userIdReceive).then(function(resKarmaPointTotal){
                                         bot.postMessage(data.channel, 
                                             resUserReceiveInfo.account_realname + " receives 1 point from " + resUserSendInfo.account_realname 
                                             + ". " + resUserReceiveInfo.account_realname + " now has " + resKarmaPointTotal + " point(s)."
@@ -108,8 +109,8 @@ function messageThanks (data) {
 function messageKarmaPoint(data) {
     return new Promise(function(resolve, reject) {
         UserAccount.findOne({where: {"account_id": data.user}}).then(function(resUserInfo){
-            GHELPERMODEL.getUserKarmaReceive(resUserInfo.id).then(function(resKarmaPointTotal){
-                GHELPERMODEL.getUserKarmaSendRemainingBySlackId(data.user).then(function(karmaPointRemaining){
+            karmaPointService.getUserKarmaReceive(resUserInfo.id).then(function(resKarmaPointTotal){
+                karmaPointService.getUserKarmaSendRemainingBySlackId(data.user).then(function(karmaPointRemaining){
                     bot.postMessage(data.channel, 
                         "You received " + resKarmaPointTotal + " point(s). And " + karmaPointRemaining + " point(s) left to be send today."
                     ); 

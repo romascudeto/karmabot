@@ -1,6 +1,3 @@
-var app = require("../../server/server");
-var UserAccount = app.models.UserAccount;
-var GCONST = require('../constant/global');
 var _ = require('lodash');
 
 module.exports.formatDate = function formatDate(date) {
