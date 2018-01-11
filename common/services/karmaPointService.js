@@ -23,8 +23,8 @@ function getUserKarmaSendRemainingBySlackId (slackId) {
 
 function getUserKarmaReceive (userIdReceive) {
     return new Promise(function(resolve, reject) {
-        KarmaPoint.find({where: {"user_id_receive": userIdReceive}}).then(function(resultKarmaPoint){
-            resolve(resultKarmaPoint.length);
+        KarmaPoint.find({where: {"user_id_receive": userIdReceive}, include: "userAccountSend"}).then(function(resultKarmaPoint){
+            resolve([resultKarmaPoint, resultKarmaPoint.length]);
         });
     })
 }

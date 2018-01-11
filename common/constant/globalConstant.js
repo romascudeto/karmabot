@@ -1,5 +1,5 @@
 module.exports = {
-    BOT_TOKEN: 'xoxb-294856326721-H15QhckZqE88GlX5Cr8wffqo',
+    BOT_TOKEN: 'xoxb-294856326721-zACVepGxFEPWwSoIgrEBx089',
     BOT_NAME: 'karmabot',
     DATA_TYPE : 'message',
     DATA_KEYWORD : 'thanks',
