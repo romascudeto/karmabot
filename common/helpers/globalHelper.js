@@ -23,3 +23,13 @@ module.exports.getUserIdReceive = function getUserIdReceive(slackIdSend, stringT
 module.exports.checkMentionPeople = function checkMentionPeople(stringText) {
     return stringText.indexOf("@");
 }
+
+module.exports.isChannelMessage = function isChannelMessage(data) {
+    return new Promise(function(resolve, reject) {
+        var isChannel = 0;
+        if (data.channel.substring(0,1)=="C"){
+            isChannel = 1;
+        }
+        resolve(isChannel);
+    })
+}

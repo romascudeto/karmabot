@@ -17,7 +17,6 @@ exports.syncUser = syncUser;
 exports.messageLeaderboard = messageLeaderboard;
 exports.messageThanks = messageThanks;
 exports.messageKarmaPoint = messageKarmaPoint;
-exports.isChannelMessage = isChannelMessage;
 
 function syncUser () {
     return new Promise(function(resolve, reject) {
@@ -144,15 +143,5 @@ function messageKarmaPoint(data) {
                 });
             })    
         })
-    })
-}
-
-function isChannelMessage(data) {
-    return new Promise(function(resolve, reject) {
-        var isChannel = 0;
-        if (data.channel.substring(0,1)=="C"){
-            isChannel = 1;
-        }
-        resolve(isChannel);
     })
 }

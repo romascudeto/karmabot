@@ -13,7 +13,7 @@ var bot = new SlackBot({
 
 bot.on('message', function(data) {
     if (data.type.toLowerCase() == globalConstant.DATA_TYPE){
-        botService.isChannelMessage(data).then(function(resIsChannel){
+        globalHelper.isChannelMessage(data).then(function(resIsChannel){
             if (resIsChannel > 0){
                 if (data.text.toLowerCase().indexOf(globalConstant.DATA_LEADERBOARD) >= 0){
                         botService.messageLeaderboard(data);
